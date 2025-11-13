@@ -32,7 +32,8 @@
     },
     "deepseek": {
       "auth_key": "",
-      "model_name": "deepseek-chat"
+      "model_name": "deepseek-chat",
+      "base_url": "https://api.deepseek.com/v1"
     },
     "openai": {
       "auth_key": "",
@@ -56,4 +57,5 @@
   "translation_prompt": {
     "system_prompt": "You are a professional translator. Translate from {original_lang} to {target_lang}. Return only the translation without explanations or notes."
   }
+
 }
