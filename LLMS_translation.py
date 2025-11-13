@@ -203,7 +203,8 @@ class Deepseek_translation:
     def __init__(self):
         config = load_config.load_config()
         self.api_key = config['translation_services']['deepseek']['auth_key']
-        self.url = "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
+        # ИСПРАВЛЕННЫЙ URL для DeepSeek
+        self.url = "https://api.deepseek.com/v1/chat/completions"
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
@@ -228,7 +229,8 @@ class Deepseek_translation:
                 }
             ],
             "temperature": 0.3,
-            "top_p": 0.9
+            "top_p": 0.9,
+            "stream": False  # Добавьте это
         }
 
         try:
@@ -237,20 +239,25 @@ class Deepseek_translation:
                     result = await response.json()
                     return result['choices'][0]['message']['content'].strip()
                 else:
-                    print(f"Error: {response.status}")
+                    error_text = await response.text()
+                    print(f"DeepSeek API Error: {response.status}, Details: {error_text}")
                     return ""
         except Exception as e:
-            print(f"Error in translation: {e}")
+            print(f"Error in DeepSeek translation: {e}")
             return ""
 
     async def translate(self, texts, original_lang, target_lang):
         """异步批量翻译"""
+        print(f"Starting DeepSeek translation of {len(texts)} texts")
         async with aiohttp.ClientSession() as session:
             tasks = [
                 self.translate_single(session, text, original_lang, target_lang)
                 for text in texts
             ]
-            return await asyncio.gather(*tasks)
+            results = await asyncio.gather(*tasks)
+            print(f"DeepSeek translation completed, {len(results)} texts translated")
+            return results
+            
 class Doubao_translation:
     def __init__(self):
         config = load_config.load_config()
@@ -649,3 +656,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
